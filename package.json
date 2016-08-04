@@ -1,0 +1,25 @@
+{
+  "name": "villain-mustache",
+  "version": "0.0.0",
+  "description": "A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (elsif, else, endif) blocks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwirke/villain-mustache.git"
+  },
+  "keywords": [
+    "villain-mustache",
+    "villain",
+    "mustache",
+    "labels"
+  ],
+  "author": "Kwirke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kwirke/villain-mustache/issues"
+  },
+  "homepage": "https://github.com/kwirke/villain-mustache#readme"
+}
