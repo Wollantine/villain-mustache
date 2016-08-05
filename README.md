@@ -40,11 +40,11 @@ console.log(villainMustache(label, context));
 **Note**: It is a bad idea, however, to use this library to take care of pluralization, numbers, dates, and other localization issues that can be solved by other libraries (e.g. [i18n](https://www.npmjs.com/package/i18n)).
 
 ## The Entrails
-It consists of a simple and small compiler that:
+It consists of a simple and small interpreter that:
 - Parses the label into tokens
-- Generates a simple Abstract Syntax Tree
-- Executes the ifs, and
-- Replaces the variables
+- For each generated token:
+    - It executes the token, and
+    - Updates the current state in a pile
 
 Its grammar is:
 ```

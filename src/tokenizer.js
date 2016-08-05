@@ -25,19 +25,18 @@ var tokenizeExpr = new RegExp(
     '((?:{[^{]|[^{])+)', 'g'          // ATOM(var): 4th capture group
 );
 
-const tokenize = (str) => {
-    let tokens = [];
-    let match = null;
+const tokenize = (str, interpreter = []) => {
+    let match;
     while ((match = tokenizeExpr.exec(str)) !== null) {
-        if (match[0].indexOf('{{#if') == 0) tokens.push(Token(IF, match[1]));
-        else if (match[0].indexOf('{{else if') == 0) tokens.push(Token(ELSIF, match[2]));
-        else if (match[0].indexOf('{{else') == 0) tokens.push(Token(ELSE));
-        else if (match[0].indexOf('{{/if') == 0) tokens.push(Token(ENDIF));
-        else if (match[0].indexOf('{{') == 0) tokens.push(Token(VAR, match[3]));
-        else if (match[4].length > 0) tokens.push(Token(ATOM, match[4]));
+        if (match[0].indexOf('{{#if') == 0) interpreter.push(Token(IF, match[1]));
+        else if (match[0].indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, match[2]));
+        else if (match[0].indexOf('{{else') == 0) interpreter.push(Token(ELSE));
+        else if (match[0].indexOf('{{/if') == 0) interpreter.push(Token(ENDIF));
+        else if (match[0].indexOf('{{') == 0) interpreter.push(Token(VAR, match[3]));
+        else if (match[4].length > 0) interpreter.push(Token(ATOM, match[4]));
     }
 
-    return tokens;
+    return interpreter;
 };
 
 export default tokenize;

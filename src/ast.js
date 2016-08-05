@@ -1,5 +1,0 @@
-// class AbstractSyntaxTree {
-//     constructor(root, ) {
-//
-//     }
-// }

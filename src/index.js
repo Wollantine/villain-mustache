@@ -1,13 +1,13 @@
 import tokenize from './tokenizer';
-import Token from './token';
+import Interpreter from './interpreter';
 
 const villainMustache = (label, context) => {
     
-    let tokens = tokenize(label);
+    const interpreter = new Interpreter(context);
     
+    let tokens = tokenize(label, interpreter);
     
-    
-    return label;
+    return interpreter.getOutput();
 }
 
 export default villainMustache;

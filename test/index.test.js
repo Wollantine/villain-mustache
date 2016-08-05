@@ -6,7 +6,7 @@ chai.use(sinonChai);
 
 import util from 'util';
 
-import villain from '../dist/index';
+import villain from '../src/index';
 
 describe('Villain Mustache', () => {
     it('Should not alter labels without mustache markup', () => {

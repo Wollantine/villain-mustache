@@ -1,10 +1,35 @@
 import chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 chai.should();
+chai.use(sinonChai);
 
-import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM} from '../dist/token';
-import tokenize from '../dist/tokenizer';
+import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM} from '../src/token';
+import tokenize from '../src/tokenizer';
 
 describe('Tokenizer', () => {
+
+    it('Should call push on the interpreter', () => {
+        let test = 'Hello';
+        let interpreter = {};
+        let spy = sinon.spy(interpreter, 'push');
+
+        tokenize(test);
+
+        spy.should.have.been.calledOnce;
+    });
+
+    it('Should push an atom token on the interpreter', () => {
+        let test = 'Hello';
+        let interpreter = {};
+        let spy = sinon.spy(interpreter, 'push');
+        let expected = Token(ATOM, 'Hello');
+
+        tokenize(test);
+
+        spy.should.have.been.calledWith(expected);
+    });
+
     it('Should generate zero tokens from empty string', () => {
         let test = '';
         let expected = [];
