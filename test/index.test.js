@@ -3,7 +3,7 @@ chai.should();
 
 describe('Villain Mustache', () => {
     it('Should not alter labels without mustache markup', () => {
-
+        
     });
 
     it('Should replace {{var}} with var\'s value', () => {
