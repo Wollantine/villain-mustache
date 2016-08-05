@@ -1,6 +1,6 @@
 {
   "name": "villain-mustache",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (elsif, else, endif) blocks.",
   "main": "dist/index.js",
   "scripts": {
