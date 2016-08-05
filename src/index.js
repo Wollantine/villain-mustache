@@ -3,7 +3,7 @@ import Interpreter from './interpreter';
 
 const villainMustache = (label, context) => {
     
-    const interpreter = new Interpreter(context);
+    const interpreter = new Interpreter(context, label);
     
     let tokens = tokenize(label, interpreter);
     

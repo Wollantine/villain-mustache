@@ -1,4 +1,4 @@
-import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM} from './token';
+import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM, COMMENT} from './token';
 
 /**
  * Regular expression to detect the tokens var, if, elsif, else, endif and atom from the following grammar:
@@ -22,18 +22,21 @@ var tokenizeExpr = new RegExp(
     '{{else}}|' +
     '{{\\/if}}|' +
     '{{(\\w+)}}|' +                     // VAR(var): 3rd capture group
-    '((?:{[^{]|[^{])+)', 'g'          // ATOM(var): 4th capture group
+    '((?:{[^{]|[^{])+)|' +               // ATOM(var): 4th capture group
+    '{{!\\w*}}',
+    'g'
 );
 
 const tokenize = (str, interpreter = []) => {
     let match;
     while ((match = tokenizeExpr.exec(str)) !== null) {
-        if (match[0].indexOf('{{#if') == 0) interpreter.push(Token(IF, match[1]));
-        else if (match[0].indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, match[2]));
-        else if (match[0].indexOf('{{else') == 0) interpreter.push(Token(ELSE));
-        else if (match[0].indexOf('{{/if') == 0) interpreter.push(Token(ENDIF));
-        else if (match[0].indexOf('{{') == 0) interpreter.push(Token(VAR, match[3]));
-        else if (match[4].length > 0) interpreter.push(Token(ATOM, match[4]));
+        if (match[0].indexOf('{{#if') == 0) interpreter.push(Token(IF, match[0], match[1]));
+        else if (match[0].indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, match[0], match[2]));
+        else if (match[0].indexOf('{{else') == 0) interpreter.push(Token(ELSE, match[0]));
+        else if (match[0].indexOf('{{/if') == 0) interpreter.push(Token(ENDIF, match[0]));
+        else if (match[0].indexOf('{{!') == 0) interpreter.push(Token(COMMENT, match[0]));
+        else if (match[0].indexOf('{{') == 0) interpreter.push(Token(VAR, match[0], match[3]));
+        else if (match[4].length > 0) interpreter.push(Token(ATOM, match[0], match[4]));
     }
 
     return interpreter;

@@ -4,13 +4,14 @@ export const
     ELSIF = 'elsif',
     ELSE = 'else',
     ENDIF = 'endif',
-    ATOM = 'atom';
+    ATOM = 'atom',
+    COMMENT = 'comment';
 
-const allowedTypes = [VAR, IF, ELSIF, ELSE, ENDIF, ATOM];
+const allowedTypes = [VAR, IF, ELSIF, ELSE, ENDIF, ATOM, COMMENT];
 
-const Token = (type = ATOM, content = null) => {
+const Token = (type = ATOM, match = null, content = null) => {
     if (!~allowedTypes.indexOf(type)) throw 'Token type not allowed';
-    return {type, content};
+    return {type, match, content};
 };
 
 export default Token;
