@@ -1,5 +1,5 @@
 # villain-mustache
-A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (elsif, else, endif) blocks.
+A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (else if, else) blocks.
 
 ## Why
 Worst villains, even if tiny, can achieve enormous things. Even if their moustache looks ridiculous.
@@ -10,7 +10,7 @@ This library allows you to have this:
 ```js
 {
 	"label1": "Welcome, {{user.name}}!",
-    "label2": "You have {{#if user.tasks}}{{user.tasks}}{{#else}}no{{#endif}} new task{{#if plural}}s{{#endif}}."
+    "label2": "You have {{#if user.tasks}}{{user.tasks}}{{else}}no{{/if}} new task{{#if plural}}s{{/if}}."
 }
 ```
 You could of course install a full mustache/handlebars, precompile each label separately, and even hit your head against the wall, but I'd prefer if you wouldn't have to.
@@ -24,7 +24,7 @@ Enjoy it:
 ```js
 var villainMustache = require('villain-mustache')
 
-var label = "You have {{#if user.tasks}}{{user.tasks}}{{#else}}no{{#endif}} new task{{#if plural}}s{{#endif}}.";
+var label = "You have {{#if user.tasks}}{{user.tasks}}{{else}}no{{/if}} new task{{#if plural}}s{{/if}}.";
 var context = {
 	user: {
     	name: "Gandalf",
@@ -52,9 +52,9 @@ expr => (cond | var | atom)*
 cond => if expr (elsif expr)* (else expr)? endif
 
 if => /{{#if \w+}}/
-elsif => /{{#elsif \w+}}/
-else => /{{#else}}/
-endif => /{{#endif}}/
+elsif => /{{else if \w+}}/
+else => /{{else}}/
+endif => /{{/if}}/
 
 var => /{{\w+}}/
 atom => /.*?/
