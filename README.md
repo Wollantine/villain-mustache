@@ -2,7 +2,8 @@
 A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (else if, else) blocks.
 
 ## Why
-Worst villains, even if tiny, can achieve enormous things. Even if their moustache looks ridiculous.
+Worst villains, even if tiny, can achieve enormous things. Even if their moustache looks ridiculous:
+![villain moustache](https://github.com/kwirke/villain-mustache/blob/master/villain.jpg)
 
 When dealing with internationalization, you might end up with lots of labels, and in most cases they will include variables and conditions, or else end being split up into their components.
 
