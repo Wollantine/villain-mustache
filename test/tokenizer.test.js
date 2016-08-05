@@ -34,14 +34,14 @@ describe('Tokenizer', () => {
     });
 
     it('Should generate an if, an atom and an endif from a simple cond', () => {
-        let test = '{{#if var}}Hello!{{#endif}}';
+        let test = '{{#if var}}Hello!{{/if}}';
         let expected = [Token(IF, 'var'), Token(ATOM, 'Hello!'), Token(ENDIF)];
 
         tokenize(test).should.deep.equal(expected);
     });
 
     it('Should generate all the tokens from a complete cond', () => {
-        let test = '{{#if var}}Hello!{{#elsif othervar}}Good morning!{{#elsif anothervar}}Good afternoon!{{#else}}¿What else?{{#endif}}';
+        let test = '{{#if var}}Hello!{{else if othervar}}Good morning!{{else if anothervar}}Good afternoon!{{else}}¿What else?{{/if}}';
         let expected = [
             Token(IF, 'var'),
             Token(ATOM, 'Hello!'),
@@ -58,7 +58,7 @@ describe('Tokenizer', () => {
     });
 
     it('Should generate all the tokens from embedded conds', () => {
-        let test = '{{#if var}}Hello!{{#if othervar}}Good morning!{{#endif}}Good bye!{{#else}}¿What else?{{#endif}}';
+        let test = '{{#if var}}Hello!{{#if othervar}}Good morning!{{/if}}Good bye!{{else}}¿What else?{{/if}}';
         let expected = [
             Token(IF, 'var'),
             Token(ATOM, 'Hello!'),

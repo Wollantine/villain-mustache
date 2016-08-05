@@ -23,8 +23,8 @@ describe('Villain Mustache', () => {
     });
 
     it('Should compile {{#if}} to the adequate contents', () => {
-        let label = 'Gandalf: "{{#if lateAndSorry}}Fly, you fools!{{#elseif late}}A wizard is never late.' +
-            '{{#else}}End? No, the journey doesn\'t end here.{{#endif}}"';
+        let label = 'Gandalf: "{{#if lateAndSorry}}Fly, you fools!{{else if late}}A wizard is never late.' +
+            '{{else}}End? No, the journey doesn\'t end here.{{/if}}"';
         let context = {lateAndSorry: false, late: true};
         let expected = 'Gandalf: "A wizard is never late."';
 
@@ -32,24 +32,24 @@ describe('Villain Mustache', () => {
     });
 
     it('Should compile nested {{#if}}s correctly', () => {
-        let label = 'A{{#if x}}B{{#elseif y}}C' +
-            '{{#if z}}E{{#else}}D{{#endif}}C{{#else}}F{{#endif}}"';
+        let label = 'A{{#if x}}B{{else if y}}C' +
+            '{{#if z}}E{{else}}D{{/if}}C{{else}}F{{/if}}"';
         let context = {x: false, y: true, z: false};
         let expected = 'ACDC';
 
         villain(label, context).should.equal(expected);
     });
 
-    it('Should keep unmatched {{#elsif}}, {{#else}}, {{#endif}}', () => {
-        let label = '{{#endif}}';
+    it('Should keep unmatched {{else if}}, {{else}}, {{/if}}', () => {
+        let label = '{{/if}}';
         let context = {trueCondition: true, fakeCondition: true};
-        let expected = '{{#endif}}';
+        let expected = '{{/if}}';
 
         villain(label, context).should.equal(expected);
     });
 
-    it('Should output a warning on unmatched {{#elsif}}, {{#else}}, {{#endif}}', () => {
-        let label = '{{#endif}}';
+    it('Should output a warning on unmatched {{else if}}, {{else}}, {{/if}}', () => {
+        let label = '{{/if}}';
 
         let spy = sinon.spy(console, 'warn');
 
@@ -58,7 +58,7 @@ describe('Villain Mustache', () => {
         spy.should.have.been.called;
     });
 
-    it('Should show tag and content when there is no {{#endif}}', () => {
+    it('Should show tag and content when there is no {{/if}}', () => {
         let label = '{{#if trueCondition}}Hello!';
         let context = {trueCondition: true};
         let expected = '{{#if trueCondition}}Hello!';
@@ -66,7 +66,7 @@ describe('Villain Mustache', () => {
         villain(label, context).should.equal(expected);
     });
 
-    it('Should output a warning when there is no {{#endif}}', () => {
+    it('Should output a warning when there is no {{/if}}', () => {
         let label = '{{#if trueCondition}}Hello!';
         let context = {trueCondition: true};
 
@@ -78,7 +78,7 @@ describe('Villain Mustache', () => {
     });
 
     it('Should assume false when a condition is not provided in context', () => {
-        let label = '{{#if trueCondition}}Hello!{{#endif}}';
+        let label = '{{#if trueCondition}}Hello!{{/if}}';
         let expected = '';
 
         villain(label, undefined).should.equal(expected);

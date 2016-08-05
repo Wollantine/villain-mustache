@@ -16,7 +16,14 @@ import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM} from './token';
  *
  * @type {RegExp}
  */
-const tokenizeExpr = /{{#if ([\w\._$]+)}}|{{else if ([\w\._$]+)}}|{{else}}|{{\/if}}|{{(\w+)}}|((?:{[^{]|[^{])+)/g;
+var tokenizeExpr = new RegExp(
+    '{{#if ([\\w\\._$]+)}}|' +          // IF(var): 1st capture group
+    '{{else if ([\\w\\._$]+)}}|' +      // ELSIF(var): 2nd capture group
+    '{{else}}|' +
+    '{{\\/if}}|' +
+    '{{(\\w+)}}|' +                     // VAR(var): 3rd capture group
+    '((?:{[^{]|[^{])+)', 'g'          // ATOM(var): 4th capture group
+);
 
 const tokenize = (str) => {
     let tokens = [];
