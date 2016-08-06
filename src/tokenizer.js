@@ -11,8 +11,9 @@ import Token, {VAR, IF, ELSIF, ELSE, ENDIF, ATOM, COMMENT} from './token';
  * else => /{{else}}/
  * endif => /{{\/if}}/
  *
- * var => /{{\w+}}/
- * atom => /({[^{]|[^{])* /
+ * var => /{{[\.\w$_]+}}/
+ * atom => /({[^{]|[^{])+/
+ * comment => /{{!.*?}}/
  *
  * @type {RegExp}
  */

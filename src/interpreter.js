@@ -12,6 +12,7 @@ class Interpreter {
     }
 
     push(token) {
+        // console.log(token);
         switch (token.type) {
             case VAR: this.variable(token); break;
             case IF: this.beginIf(token); break;
@@ -22,6 +23,8 @@ class Interpreter {
             case ATOM:
             default: this.atom(token);
         }
+        // console.log(this.statePile);
+        // console.log('\n');
     }
 
     shouldPrint() {

@@ -38,6 +38,18 @@ console.log(villainMustache(label, context));
 // You have 9 new tasks.
 ```
 
+Test it:
+```
+npm i
+npm test
+```
+
+Benchmark it against Handlebars:
+```
+npm i
+npm run benchmark
+```
+
 **Note**: It is a bad idea, however, to use this library to take care of pluralization, numbers, dates, and other localization issues that can be solved by other libraries (e.g. [i18n](https://www.npmjs.com/package/i18n)).
 
 ## The Entrails
