@@ -21,9 +21,9 @@ var tokenizeExpr = new RegExp(
     '{{else if ([\\w\\._$]+)}}|' +      // ELSIF(var): 2nd capture group
     '{{else}}|' +
     '{{\\/if}}|' +
-    '{{(\\w+)}}|' +                     // VAR(var): 3rd capture group
-    '((?:{[^{]|[^{])+)|' +               // ATOM(var): 4th capture group
-    '{{!\\w*}}',
+    '{{([\\w\\.$_]+)}}|' +               // VAR(var): 3rd capture group
+    '((?:{[^{]|[^{])+)|' +               // ATOM(content): 4th capture group
+    '{{!.*?}}',
     'g'
 );
 

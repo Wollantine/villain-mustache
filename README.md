@@ -1,5 +1,5 @@
 # villain-mustache
-A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (else if, else) blocks.
+A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}}, {{!comment}}, and {{#if var}} (else if, else) blocks.
 
 ## Why
 Worst villains, even if tiny, can achieve enormous things. Even if their moustache looks ridiculous:
@@ -57,7 +57,7 @@ elsif => /{{else if \w+}}/
 else => /{{else}}/
 endif => /{{/if}}/
 
-var => /{{\w+}}/
+var => /{{[\w\._$]+}}/
 atom => /.*?/
-comment => /{{!\w*}}/
+comment => /{{!.*?}}/
 ```

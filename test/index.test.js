@@ -22,6 +22,14 @@ describe('Villain Mustache', () => {
         villain(label, context).should.equal(expected);
     });
 
+    it('should replace {{var.sub}} with var.sub\'s value', () => {
+        let label = 'My name is {{king.name}}, king of kings';
+        let context = {king: {name: 'Ozymandias'}};
+        let expected = 'My name is Ozymandias, king of kings';
+
+        villain(label, context).should.equal(expected);
+    });
+
     it('should compile {{#if}} to the adequate contents', () => {
         let label = 'Gandalf: "{{#if lateAndSorry}}Fly, you fools!{{else if late}}A wizard is never late.' +
             '{{else}}End? No, the journey doesn\'t end here.{{/if}}"';
