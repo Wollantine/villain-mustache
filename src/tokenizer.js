@@ -31,13 +31,16 @@ var tokenizeExpr = new RegExp(
 const tokenize = (str, interpreter = []) => {
     let match;
     while ((match = tokenizeExpr.exec(str)) !== null) {
-        if (match[0].indexOf('{{#if') == 0) interpreter.push(Token(IF, match[0], match[1]));
-        else if (match[0].indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, match[0], match[2]));
-        else if (match[0].indexOf('{{else') == 0) interpreter.push(Token(ELSE, match[0]));
-        else if (match[0].indexOf('{{/if') == 0) interpreter.push(Token(ENDIF, match[0]));
-        else if (match[0].indexOf('{{!') == 0) interpreter.push(Token(COMMENT, match[0]));
-        else if (match[0].indexOf('{{') == 0) interpreter.push(Token(VAR, match[0], match[3]));
-        else if (match[4].length > 0) interpreter.push(Token(ATOM, match[0], match[4]));
+
+        let [matchedText, ifContent, elseIfContent, varContent, atomContent] = match;
+
+        if (matchedText.indexOf('{{#if') == 0) interpreter.push(Token(IF, matchedText, ifContent));
+        else if (matchedText.indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, matchedText, elseIfContent));
+        else if (matchedText.indexOf('{{else') == 0) interpreter.push(Token(ELSE, matchedText));
+        else if (matchedText.indexOf('{{/if') == 0) interpreter.push(Token(ENDIF, matchedText));
+        else if (matchedText.indexOf('{{!') == 0) interpreter.push(Token(COMMENT, matchedText));
+        else if (matchedText.indexOf('{{') == 0) interpreter.push(Token(VAR, matchedText, varContent));
+        else if (atomContent.length > 0) interpreter.push(Token(ATOM, matchedText, atomContent));
     }
 
     return interpreter;

@@ -49,6 +49,7 @@ Benchmark it against Handlebars:
 npm i
 npm run benchmark
 ```
+Spoiler: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
 
 **Note**: It is a bad idea, however, to use this library to take care of pluralization, numbers, dates, and other localization issues that can be solved by other libraries (e.g. [i18n](https://www.npmjs.com/package/i18n)).
 
