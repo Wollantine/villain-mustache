@@ -16,6 +16,8 @@ This library allows you to have this:
 ```
 You could of course install a full mustache/handlebars, precompile each label separately, and even hit your head against the wall, but I'd prefer if you wouldn't have to.
 
+**Note**: It is a bad idea, however, to use this library to take care of pluralization, numbers, dates, and other localization issues that can be solved by other libraries (e.g. [i18n](https://www.npmjs.com/package/i18n)).
+
 ## How
 Install it:
 ```
@@ -49,9 +51,7 @@ Benchmark it against Handlebars:
 npm i
 npm run benchmark
 ```
-Spoiler: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
-
-**Note**: It is a bad idea, however, to use this library to take care of pluralization, numbers, dates, and other localization issues that can be solved by other libraries (e.g. [i18n](https://www.npmjs.com/package/i18n)).
+**Spoiler**: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
 
 ## The Entrails
 It consists of a simple and small interpreter that:
