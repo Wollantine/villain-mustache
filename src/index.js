@@ -1,11 +1,20 @@
 import tokenize from './tokenizer';
 import Interpreter from './interpreter';
+import ErrorReporter from './errorReporter';
 
-const villainMustache = (label, context) => {
+const defaultConfiguration = {
+    warningOutput: (message) => {console.warn(message)}
+};
+
+const villainMustache = (label, context, configuration = {}) => {
     
-    const interpreter = new Interpreter(context, label);
+    configuration = {...defaultConfiguration, ...configuration};
+
+    const errorReporter = new ErrorReporter(configuration.warningOutput);
+
+    const interpreter = new Interpreter(context, label, errorReporter);
     
-    let tokens = tokenize(label, interpreter);
+    tokenize(label, interpreter);
     
     return interpreter.getOutput();
 }

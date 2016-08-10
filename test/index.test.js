@@ -130,7 +130,7 @@ describe('Villain Mustache', () => {
 
     });
 
-    describe('Warning output', () => {
+    describe('Warnings', () => {
 
         afterEach(() => {
             try {
@@ -191,12 +191,13 @@ describe('Villain Mustache', () => {
             spy.should.not.have.been.called;
         });
 
-        it('should output a warning if the configuration includes an unexisting option', () => {
+        it('should not complain if the configuration includes an unexisting option', () => {
             let spy = sinon.spy(console, 'warn');
 
             villain(label, null, {nonExistingOption: true});
 
-            spy.should.have.been.called;
+            villain(label, null, {}).should.not.throw;
+            spy.should.not.have.been.called;
         });
 
         describe('warningOutput option', () => {
@@ -216,14 +217,6 @@ describe('Villain Mustache', () => {
                 villain(wrongLabel, null, {warningOutput: () => {}});
 
                 spy.should.not.have.been.called;
-            });
-
-            it('should output a warning through the specified output if the configuration includes also an unexisting option', () => {
-                let spy = sinon.spy();
-
-                villain(wrongLabel, null, {warningOutput: spy, nonExistingOption: true});
-
-                spy.should.have.been.called;
             });
 
         });

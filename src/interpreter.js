@@ -1,6 +1,7 @@
 import {VAR, IF, ELSIF, ELSE, ENDIF, ATOM, COMMENT} from './token';
 import dot from 'dot-object';
 import util from 'util';
+import ErrorReporter from './errorReporter';
 
 /**
  * @class Interpreter Interprets an asynchronous sequence of tokens provided through calls to push(token).
@@ -11,13 +12,11 @@ import util from 'util';
  *  {presentState, accumulatedCondition} that defines if there are else if conditions and when should we render.
  * @field {string} result The result of the interpreted template. Will be returned by getResult().
  * @field {string} label The current template, only for exception handling purposes.
- * @field {array} errors The array of strings that will be printed to console.warn when
- *  getResult({printErrors: true}) is called.
+ * @field {ErrorReporter} errorReporter The error reporter that will be called with each error message.
  *
  * @method constructor
  * @method push
- * @method getResult
- * @method getErrors
+ * @method getOutput
  */
 class Interpreter {
 
@@ -28,13 +27,14 @@ class Interpreter {
      *
      * @param context
      * @param label
+     * @param errorReporter
      */
-    constructor(context = {}, label) {
+    constructor(context = {}, label, errorReporter = new ErrorReporter()) {
         this.context = context;
         this.statePile = [];
         this.result = '';
         this.label = label;
-        this.errors = [];
+        this.errorReporter = errorReporter;
     }
 
     /**
@@ -62,29 +62,18 @@ class Interpreter {
      * Returns the rendered template result and optionally prints any warning. It also assumes the end of the
      *  expression and will generate errors if the expression doesn't end correctly.
      *
-     * @param printErrors If true, errors will be printed to console.warn
+     * @param printErrors If true, errorReporter will be flushed
      * @returns {string} The rendered template
      */
     getOutput({printErrors = true} = {}) {
         if (this.statePile.length > 0) {
-            this.errors.push('Every {{#if}} must be closed with {{/if}}:\n'+this.label);
+            this.errorReporter.report('Every {{#if}} must be closed with {{/if}}:\n'+this.label);
         }
         if (printErrors) {
-            for (var i = 0; i < this.errors.length; i++) {
-                console.warn(this.errors[i]);
-            }
+            this.errorReporter.flush();
         }
 
         return this.result;
-    }
-
-    /**
-     * Returns the array of errors that could be printed to console.warn.
-     *
-     * @returns {Array} An array of strings
-     */
-    getErrors() {
-        return this.errors;
     }
 
 
@@ -121,7 +110,7 @@ class Interpreter {
 
     _beginElse(token) {
         if (this.statePile.length == 0) {
-            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
+            this.errorReporter.report('Unexpected '+token.match+' at:\n'+this.label);
             this.result += token.match;
         } else {
             let state = this.statePile[this.statePile.length-1];
@@ -133,7 +122,7 @@ class Interpreter {
 
     _elseIf(token) {
         if (this.statePile.length == 0) {
-            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
+            this.errorReporter.report('Unexpected '+token.match+' at:\n'+this.label);
             this.result += token.match;
         } else {
             // We update the state: Accumulated ANDs the last condition, and Present gets the new one
@@ -150,7 +139,7 @@ class Interpreter {
 
     _endIf(token) {
         if (this.statePile.length == 0) {
-            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
+            this.errorReporter.report('Unexpected '+token.match+' at:\n'+this.label);
             this.result += token.match;
         } else {
             this.statePile.pop();

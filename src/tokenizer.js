@@ -28,22 +28,36 @@ var tokenizeExpr = new RegExp(
     'g'
 );
 
+/**
+ * Processes an input string and feeds tokens to the interpreter.
+ *
+ * @param {string} str The input.
+ * @param {Interpreter} interpreter Anything that accepts calls to .push(Token).
+ * @return {Array(Token)} The array of detected tokens.
+ */
 const tokenize = (str, interpreter = []) => {
     let match;
+    let tokens = [];
     while ((match = tokenizeExpr.exec(str)) !== null) {
 
         let [matchedText, ifContent, elseIfContent, varContent, atomContent] = match;
+        let token = null;
 
-        if (matchedText.indexOf('{{#if') == 0) interpreter.push(Token(IF, matchedText, ifContent));
-        else if (matchedText.indexOf('{{else if') == 0) interpreter.push(Token(ELSIF, matchedText, elseIfContent));
-        else if (matchedText.indexOf('{{else') == 0) interpreter.push(Token(ELSE, matchedText));
-        else if (matchedText.indexOf('{{/if') == 0) interpreter.push(Token(ENDIF, matchedText));
-        else if (matchedText.indexOf('{{!') == 0) interpreter.push(Token(COMMENT, matchedText));
-        else if (matchedText.indexOf('{{') == 0) interpreter.push(Token(VAR, matchedText, varContent));
-        else if (atomContent.length > 0) interpreter.push(Token(ATOM, matchedText, atomContent));
+        if (matchedText.indexOf('{{#if') == 0) token = Token(IF, matchedText, ifContent);
+        else if (matchedText.indexOf('{{else if') == 0) token = Token(ELSIF, matchedText, elseIfContent);
+        else if (matchedText.indexOf('{{else') == 0) token = Token(ELSE, matchedText);
+        else if (matchedText.indexOf('{{/if') == 0) token = Token(ENDIF, matchedText);
+        else if (matchedText.indexOf('{{!') == 0) token = Token(COMMENT, matchedText);
+        else if (matchedText.indexOf('{{') == 0) token = Token(VAR, matchedText, varContent);
+        else if (atomContent.length > 0) token = Token(ATOM, matchedText, atomContent);
+
+        if (token) {
+            interpreter.push(token);
+            tokens.push(token);
+        }
     }
 
-    return interpreter;
+    return tokens;
 };
 
 export default tokenize;
