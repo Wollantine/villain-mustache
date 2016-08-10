@@ -128,6 +128,22 @@ describe('Villain Mustache', () => {
             villain(label, context).should.equal(expected);
         });
 
+        it('should allow functions with no parameters as vars {{func}}', () => {
+            let label = '{{func}}';
+            let context = {func: () => ('Return value')};
+            let expected = 'Return value';
+
+            villain(label, context).should.equal(expected);
+        });
+
+        it('should allow functions with no parameters as conditions {{#if func}}', () => {
+            let label = '{{#if func}}It doesn\'t work...{{else}}It works!{{/if}}';
+            let context = {func: () => (1 == 2)};
+            let expected = 'It works!';
+
+            villain(label, context).should.equal(expected);
+        });
+
     });
 
     describe('Warnings', () => {

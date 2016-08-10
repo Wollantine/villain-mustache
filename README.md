@@ -1,5 +1,7 @@
 # villain-mustache
-A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}}, {{!comment}}, and {{#if var}} (else if, else) blocks.
+A lightweight and incomplete mustache implementation for generating labels. It only implements {{var/function}}, {{!comment}}, and {{#if var/function}} (else if, else) blocks.
+
+[TOC]
 
 ## Why
 Worst villains, even if tiny, can achieve enormous things. Even if their moustache looks ridiculous:
@@ -31,7 +33,9 @@ var label = "You have {{#if user.tasks}}{{user.tasks}}{{else}}no{{/if}} new task
 var context = {
 	user: {
     	name: "Gandalf",
-        tasks: 9
+        tasks: function() {
+            return 9;
+        }
     },
     plural: true
 };
@@ -52,6 +56,26 @@ npm i
 npm run benchmark
 ```
 **Spoiler**: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
+
+## Allowed Mustaches
+
+### `{{var}}`
+Renders the contents of the variable. If it is not a string, node.js's `util.inspect(var)` will be used.
+
+### `{{func}}`
+Calls the function and renders its return value. **Parameters are not allowed**. If the return value is not a string, node.js's `util.inspect(var)` will be used.
+
+### `{{#if cond}}...{{/if}}`
+Renders the block contents as one would expect an `if` block to behave. Full form is:
+`{{#if var}}...{{else}}...{{else if var2}}...{{/if}}`
+
+The condition is considered true if and only if:
+
+- It is a variable no function with a truthy value, or
+- It is a function that returns a truthy value.
+
+### `{{!comment to be ignored}}`
+Ignores the contents of the mustache. It's not a block.
 
 ## Additional Options
 The method can be called with an additional configuration parameter:

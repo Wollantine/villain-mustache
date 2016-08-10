@@ -96,6 +96,9 @@ class Interpreter {
             if (typeof value === 'string') {
                 this.result += value;
             }
+            else if (typeof value === 'function') {
+                this.result += value();
+            }
             else {
                 this.result += util.inspect(value);
             }
@@ -104,6 +107,9 @@ class Interpreter {
 
     _beginIf(token) {
         let value = dot.pick(token.content, this.context);
+        if (typeof value === 'function') {
+            value = value();
+        }
         let newState = {present: !!value};
         this.statePile.push(newState);
     }
