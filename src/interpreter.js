@@ -2,35 +2,107 @@ import {VAR, IF, ELSIF, ELSE, ENDIF, ATOM, COMMENT} from './token';
 import dot from 'dot-object';
 import util from 'util';
 
+/**
+ * @class Interpreter Interprets an asynchronous sequence of tokens provided through calls to push(token).
+ *  Also outputs warnings to the console when the expressions are wrong, even though they are interpreted anyway.
+ *
+ * @field {object} context The data context for the template, i.e. the scope of the template vars.
+ * @field {array} statePile A pile that keeps the active states. Each state is a tuple
+ *  {presentState, accumulatedCondition} that defines if there are else if conditions and when should we render.
+ * @field {string} result The result of the interpreted template. Will be returned by getResult().
+ * @field {string} label The current template, only for exception handling purposes.
+ * @field {array} errors The array of strings that will be printed to console.warn when
+ *  getResult({printErrors: true}) is called.
+ *
+ * @method constructor
+ * @method push
+ * @method getResult
+ * @method getErrors
+ */
 class Interpreter {
 
+
+    /**
+     * Starts an interpreter. From now on, every token provided to the interpreter may cause rendering some result,
+     *  cause an error that will be stored, change the interpreter state or do nothing.
+     *
+     * @param context
+     * @param label
+     */
     constructor(context = {}, label) {
         this.context = context;
         this.statePile = [];
         this.result = '';
         this.label = label;
+        this.errors = [];
     }
 
+    /**
+     * Provides another token to the interpreter.
+     *
+     * @param token
+     */
     push(token) {
+        // console.log(token);
         switch (token.type) {
-            case VAR: this.variable(token); break;
-            case IF: this.beginIf(token); break;
-            case ELSE: this.beginElse(token); break;
-            case ELSIF: this.elseIf(token); break;
-            case ENDIF: this.endIf(token); break;
+            case VAR: this._variable(token); break;
+            case IF: this._beginIf(token); break;
+            case ELSE: this._beginElse(token); break;
+            case ELSIF: this._elseIf(token); break;
+            case ENDIF: this._endIf(token); break;
             case COMMENT: break;
             case ATOM:
-            default: this.atom(token);
+            default: this._atom(token);
         }
+        // console.log(this.statePile);
+        // console.log('\n');
     }
 
-    shouldPrint() {
+    /**
+     * Returns the rendered template result and optionally prints any warning. It also assumes the end of the
+     *  expression and will generate errors if the expression doesn't end correctly.
+     *
+     * @param printErrors If true, errors will be printed to console.warn
+     * @returns {string} The rendered template
+     */
+    getOutput({printErrors = true} = {}) {
+        if (this.statePile.length > 0) {
+            this.errors.push('Every {{#if}} must be closed with {{/if}}:\n'+this.label);
+        }
+        if (printErrors) {
+            for (var i = 0; i < this.errors.length; i++) {
+                console.warn(this.errors[i]);
+            }
+        }
+
+        return this.result;
+    }
+
+    /**
+     * Returns the array of errors that could be printed to console.warn.
+     *
+     * @returns {Array} An array of strings
+     */
+    getErrors() {
+        return this.errors;
+    }
+
+
+    /* --- RENDER METHODS --- */
+
+    _shouldPrint() {
         let state = this.statePile[this.statePile.length-1];
-        return (typeof state === 'undefined' || state);
+        let shouldPrint = true;
+        // We should only not print if we're inside a condition
+        if (typeof state !== 'undefined') {
+            // And it will depend on the condition
+            shouldPrint = state.present;
+        }
+        return shouldPrint;
     }
 
-    variable(token) {
-        if (this.shouldPrint()) {
+    _variable(token) {
+        if (this._shouldPrint()) {
             let value = dot.pick(token.content, this.context);
             if (typeof value === 'string') {
                 this.result += value;
@@ -41,36 +113,52 @@ class Interpreter {
         }
     }
 
-    beginIf(token) {
+    _beginIf(token) {
         let value = dot.pick(token.content, this.context);
-        this.statePile.push(!!value);
+        let newState = {present: !!value};
+        this.statePile.push(newState);
     }
 
-    beginElse(token) {
+    _beginElse(token) {
         if (this.statePile.length == 0) {
-            console.warn('Unexpected '+token.match+' at:\n'+this.label);
+            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
             this.result += token.match;
         } else {
-            this.statePile.push(!this.statePile.pop());
+            let state = this.statePile[this.statePile.length-1];
+            let accumulated = state.accumulated;
+            if (typeof accumulated === 'undefined') accumulated = true;
+            state.present = !state.present && accumulated;
         }
     }
 
-    elseIf(token) {
-        this.beginElse(token);
-        this.beginIf(token);
+    _elseIf(token) {
+        if (this.statePile.length == 0) {
+            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
+            this.result += token.match;
+        } else {
+            // We update the state: Accumulated ANDs the last condition, and Present gets the new one
+            let state = this.statePile[this.statePile.length-1];
+            let accumulated = state.accumulated;
+            if (typeof accumulated === 'undefined') accumulated = true;
+            state.accumulated = !state.present && accumulated;
+
+            // We update the present state depending on the condition
+            let value = dot.pick(token.content, this.context);
+            state.present = !!value;
+        }
     }
 
-    endIf(token) {
+    _endIf(token) {
         if (this.statePile.length == 0) {
-            console.warn('Unexpected '+token.match+' at:\n'+this.label);
+            this.errors.push('Unexpected '+token.match+' at:\n'+this.label);
             this.result += token.match;
         } else {
             this.statePile.pop();
         }
     }
     
-    atom(token) {
-        if (this.shouldPrint()) {
+    _atom(token) {
+        if (this._shouldPrint()) {
             if (typeof token.content === 'string') {
                 this.result += token.content;
             }
@@ -78,13 +166,6 @@ class Interpreter {
                 this.result += util.inspect(token.content);
             }
         }
-    }
-
-    getOutput() {
-        if (this.statePile.length > 0) {
-            console.warn('Every {{#if}} must be closed with {{/if}}:\n'+this.label);
-        }
-        return this.result;
     }
 }
 

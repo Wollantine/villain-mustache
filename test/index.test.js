@@ -9,6 +9,14 @@ import util from 'util';
 import villain from '../src/index';
 
 describe('Villain Mustache', () => {
+
+    afterEach(() => {
+        try {
+            console.warn.restore();
+        }
+        catch (e) {}
+    });
+
     it('should not alter labels without mustache markup', () => {
         let label = 'I am your father';
         villain(label).should.equal(label);
@@ -17,6 +25,14 @@ describe('Villain Mustache', () => {
     it('should replace {{var}} with var\'s value', () => {
         let label = 'My name is {{name}}, king of kings';
         let context = {name: 'Ozymandias'};
+        let expected = 'My name is Ozymandias, king of kings';
+
+        villain(label, context).should.equal(expected);
+    });
+
+    it('should replace {{var.sub}} with var.sub\'s value', () => {
+        let label = 'My name is {{king.name}}, king of kings';
+        let context = {king: {name: 'Ozymandias'}};
         let expected = 'My name is Ozymandias, king of kings';
 
         villain(label, context).should.equal(expected);
@@ -31,13 +47,33 @@ describe('Villain Mustache', () => {
         villain(label, context).should.equal(expected);
     });
 
-    it('should compile nested {{#if}}s correctly', () => {
+    it('should interpret nested {{#if}}s correctly', () => {
         let label = 'A{{#if x}}B{{else if y}}C' +
             '{{#if z}}E{{else}}D{{/if}}C{{else}}F{{/if}}';
         let context = {x: false, y: true, z: false};
         let expected = 'ACDC';
 
         villain(label, context).should.equal(expected);
+    });
+
+    it('should interpret sequential {{else if}}s correctly', () => {
+        let label = '{{#if x}}69{{else if y}}42{{else if z}}101{{else}}23{{/if}}';
+        let context = {x: false, y: true, z: false};
+        let expected = '42';
+
+        villain(label, context).should.equal(expected);
+    });
+
+    it('should not warn on nested {{#if}}s', () => {
+        let label = 'A{{#if x}}B{{else if y}}C' +
+            '{{#if z}}E{{else}}D{{/if}}C{{else}}F{{/if}}';
+        let context = {x: false, y: true, z: false};
+
+        let spy = sinon.spy(console, 'warn');
+
+        villain(label, context);
+
+        spy.should.not.have.been.called;
     });
 
     it('should keep unmatched {{else if}}, {{else}}, {{/if}}', () => {
@@ -56,8 +92,6 @@ describe('Villain Mustache', () => {
         villain(label, context);
 
         spy.should.have.been.called;
-
-        console.warn.restore();
     });
 
     it('should output content when there is no {{/if}}', () => {
@@ -77,8 +111,6 @@ describe('Villain Mustache', () => {
         villain(label, context);
 
         spy.should.have.been.called;
-
-        console.warn.restore();
     });
 
     it('should assume false when a condition is not provided in context', () => {
