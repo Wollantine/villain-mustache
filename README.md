@@ -68,7 +68,7 @@ Calls the function and renders its return value. **Parameters are not allowed**.
 ### `{{#if cond}}...{{/if}}`
 Renders the block contents as one would expect an `if` block to behave. Full form is:
 
-`{{#if var}}...{{else}}...{{else if var2}}...{{/if}}`
+`{{#if var}}...[{{else if var2}}...]*[{{else}}]?...{{/if}}`
 
 The condition is considered true if and only if:
 
