@@ -1,7 +1,7 @@
 {
   "name": "villain-mustache",
   "version": "0.2.0",
-  "description": "A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}} and {{#if var}} (elsif, else, endif) blocks.",
+  "description": "A lightweight and incomplete mustache implementation for generating labels. It only implements {{var}}, {{!comment}}, and {{#if var}} (elsif, else, endif) blocks.",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register",
