@@ -53,6 +53,20 @@ npm run benchmark
 ```
 **Spoiler**: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
 
+## Additional Options
+The method can be called with an additional configuration parameter:
+```js
+villainMustache(label, context, configuration);
+```
+This configuration is an object that contains the desired customized options.
+The **default options** are:
+```js
+configuration: {
+	warningOutput: (message) => {console.warn(message)}
+}
+```
+Any option that is not present in the default configuration will be ignored.
+
 ## The Entrails
 It consists of a simple and small interpreter that:
 - Parses the label into tokens
