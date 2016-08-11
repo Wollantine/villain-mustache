@@ -55,7 +55,8 @@ Benchmark it against Handlebars:
 npm i
 npm run benchmark
 ```
-**Spoiler**: It's a little bit slower than precompiled Handlebars, but way faster than compiling.
+**Spoiler**: It is slower than precompiled Handlebars, but way faster than compiling. If performance is key to you, and you have no problem storing 
+the precompiled labels, you should stick with Handlebars.
 
 ## Allowed Mustaches
 
@@ -72,7 +73,7 @@ Renders the block contents as one would expect an `if` block to behave. Full for
 
 The condition is considered true if and only if:
 
-- It is a variable no function with a truthy value, or
+- It is a non function variable with a truthy value, or
 - It is a function that returns a truthy value.
 
 ### `{{!comment to be ignored}}`
